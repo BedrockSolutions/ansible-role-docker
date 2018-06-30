@@ -18,4 +18,4 @@
     instance: "{{ docker }}"
 
 - include_tasks: '{{ docker.command }}.yml'
-  when docker.command is not null
+  when: docker.command is not null
