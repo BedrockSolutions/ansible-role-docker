@@ -1,2 +1,21 @@
 ---
 
+- validate:
+    schema:
+      type: object
+      properties:
+        command:
+          oneOf:
+            - type: "null"
+            - type: string
+              enum:
+                - firewall
+                - install
+                - local_volume
+                - prune
+                - swarm
+          default: null
+    instance: "{{ docker }}"
+
+- include_tasks: '{{ docker.command }}.yml'
+  when docker.command is not null

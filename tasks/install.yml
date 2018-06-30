@@ -1,0 +1,84 @@
+---
+
+- validate:
+    schema:
+      type: object
+      properties:
+        build:
+          type: string
+          default: stable
+          enum:
+            - stable
+            - edge
+        tls_cert_url:
+          type:
+          oneOf:
+            - type: "null"
+            - type: string
+              format: uri
+          default: null
+        tls_key_url:
+          oneOf:
+            - type: "null"
+            - type: string
+              format: uri
+          default: null
+        uninstall_previous_versions:
+          type: boolean
+          default: true
+        user:
+          type: string
+          default: ubuntu
+
+- block:
+    - name: "Create /etc/docker"
+      file:
+        path: /etc/docker
+        state: directory
+
+    - name: "Download Docker TLS certificate"
+      get_url:
+        url: "{{ docker.tls_cert_url }}"
+        dest: /etc/docker/tls_cert.pem
+        force: yes
+      when: docker.tls_cert_url is not null
+
+    - name: "Download Docker TLS key"
+      get_url:
+        url: "{{ docker_tls_key_url }}"
+        dest: /etc/docker/tls_key.pem
+        force: yes
+      when: docker.tls_key_url is not null
+
+    - name: "Install Docker and Compose"
+      import_role:
+        name: angstwad.docker_ubuntu
+      vars:
+        daemon_json:
+          iptables: no
+          ip-forward: yes
+          tls: yes
+          tlscert: "{{ docker.tls_cert_url is not null | ternary('/etc/docker/tls_cert.pem', None) }}"
+          tlskey: "{{ docker.tls_key_url is not null | ternary('/etc/docker/tls_key.pem', None) }}"
+          hosts:
+            - tcp://0.0.0.0:2376
+            - unix:///var/run/docker.sock
+        docker_apt_channel: "{{ docker.build }}"
+        docker_group_members: "{{ docker.user }}"
+        uninstall_previous_docker_versions: "{{ docker.uninstall_previous_versions }}"
+
+    - name: "Enable memory accounting"
+      lineinfile:
+        path: /etc/default/grub
+        regexp: GRUB_CMDLINE_LINUX_DEFAULT
+        line: GRUB_CMDLINE_LINUX_DEFAULT="console=ttyS0 swapaccount=1"
+      notify: reboot
+
+    # firewall here
+  become: yes
+
+- import_task:
+    name: jcheroske.ansible_role_common
+  vars:
+    common:
+      command: controller_reset_connection
