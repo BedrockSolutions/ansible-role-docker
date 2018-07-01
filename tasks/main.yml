@@ -23,5 +23,5 @@
   when: docker is defined
 
 - debug:
-    msg: "jcheroske.docker was not defined"
+    msg: "docker was not defined"
   when: docker is not defined
