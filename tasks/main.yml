@@ -1,5 +1,8 @@
 ---
 
+- debug:
+    var: docker
+
 - validate:
     schema:
       type: object
