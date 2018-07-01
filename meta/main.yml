@@ -1,2 +1,3 @@
 dependencies:
   - src: git@github.com:jcheroske/ansible-role-common.git
+    scm: git
