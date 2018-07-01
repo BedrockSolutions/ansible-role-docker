@@ -1,5 +1,11 @@
 ---
 
+- debug:
+    msg: In docker install
+
+- debug:
+    var: docker
+
 - validate:
     schema:
       type: object

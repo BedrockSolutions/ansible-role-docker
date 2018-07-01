@@ -1,6 +1,9 @@
 ---
 
 - debug:
+    msg: In docker main
+
+- debug:
     var: docker
 
 - validate:
