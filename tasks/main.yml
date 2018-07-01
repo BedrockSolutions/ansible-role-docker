@@ -1,25 +1,27 @@
 ---
 
-- validate:
-    schema:
-      type: object
-      properties:
-        command:
-          oneOf:
-            - type: "null"
-            - type: string
-              enum:
-                - firewall
-                - install
-                - local_volume
-                - prune
-                - swarm
-          default: null
-    instance: "{{ docker }}"
+- block:
+    - validate:
+        schema:
+          type: object
+          properties:
+            command:
+              oneOf:
+                - type: "null"
+                - type: string
+                  enum:
+                    - firewall
+                    - install
+                    - local_volume
+                    - prune
+                    - swarm
+              default: null
+        instance: "{{ docker }}"
+      register: docker_validated
 
-- include_tasks: '{{ docker.command }}.yml'
-  when: docker.command is not null
+    - include_tasks: '{{ docker_validated.command }}.yml'
+  when: docker is defined
 
 - debug:
-    msg: "jcheroske.docker command was null"
-  when: docker.command is null
+    msg: "jcheroske.docker was not defined"
+  when: docker is not defined
