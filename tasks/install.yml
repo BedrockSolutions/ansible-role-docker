@@ -94,7 +94,7 @@
     # firewall here
   become: yes
 
-- import_task:
+- import_role:
     name: jcheroske.ansible_role_common
   vars:
     common:
