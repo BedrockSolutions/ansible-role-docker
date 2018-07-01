@@ -48,17 +48,17 @@
 
     - name: "Download Docker TLS certificate"
       get_url:
-        url: "{{ docker_validated.tls_cert_url }}"
+        url: "{{ docker_validated.result.tls_cert_url }}"
         dest: /etc/docker/tls_cert.pem
         force: yes
-      when: docker_validated.tls_cert_url is not null
+      when: docker_validated.result.tls_cert_url is not null
 
     - name: "Download Docker TLS key"
       get_url:
-        url: "{{ docker_validated.tls_key_url }}"
+        url: "{{ docker_validated.result.tls_key_url }}"
         dest: /etc/docker/tls_key.pem
         force: yes
-      when: docker_validated.tls_key_url is not null
+      when: docker_validated.result.tls_key_url is not null
 
     - name: "Install Docker and Compose"
       import_role:
@@ -68,14 +68,14 @@
           iptables: no
           ip-forward: yes
           tls: yes
-          tlscert: "{{ docker_validated.tls_cert_url is not null | ternary('/etc/docker/tls_cert.pem', None) }}"
-          tlskey: "{{ docker_validated.tls_key_url is not null | ternary('/etc/docker/tls_key.pem', None) }}"
+          tlscert: "{{ docker_validated.result.tls_cert_url is not null | ternary('/etc/docker/tls_cert.pem', None) }}"
+          tlskey: "{{ docker_validated.result.tls_key_url is not null | ternary('/etc/docker/tls_key.pem', None) }}"
           hosts:
             - tcp://0.0.0.0:2376
             - unix:///var/run/docker.sock
-        docker_apt_channel: "{{ docker_validated.build }}"
-        docker_group_members: "{{ docker_validated.user }}"
-        uninstall_previous_docker_versions: "{{ docker_validated.uninstall_previous_versions }}"
+        docker_apt_channel: "{{ docker_validated.result.build }}"
+        docker_group_members: "{{ docker_validated.result.user }}"
+        uninstall_previous_docker_versions: "{{ docker_validated.result.uninstall_previous_versions }}"
 
     - name: "Enable memory accounting"
       lineinfile:
