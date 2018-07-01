@@ -1,23 +1,19 @@
 ---
 
-- debug:
-    msg: In docker main
+- block:
+    - validate:
+        schema:
+          type: object
+          properties:
+            command:
+              type: string
+              enum:
+                - firewall
+                - install
+                - local_volume
+                - prune
+                - swarm
+        instance: "{{ docker }}"
 
-- debug:
-    var: docker
-
-- validate:
-    schema:
-      type: object
-      properties:
-        command:
-          type: string
-          enum:
-            - firewall
-            - install
-            - local_volume
-            - prune
-            - swarm
-    instance: "{{ docker }}"
-
-- include_tasks: '{{ docker.command }}.yml'
+    - include_tasks: '{{ docker.command }}.yml'
+  when: docker is defined

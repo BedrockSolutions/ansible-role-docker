@@ -1,11 +1,5 @@
 ---
 
-- debug:
-    msg: In docker install
-
-- debug:
-    var: docker
-
 - validate:
     schema:
       type: object
@@ -36,9 +30,6 @@
           default: ubuntu
     instance: "{{ docker }}"
   register: docker_validated
-
-- debug:
-    var: docker_validated
 
 - block:
     - name: "Create /etc/docker"
