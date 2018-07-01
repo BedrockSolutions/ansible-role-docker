@@ -95,7 +95,7 @@
   become: yes
 
 - import_role:
-    name: jcheroske.ansible_role_common
+    name: jcheroske.common
   vars:
     common:
       command: controller_reset_connection
