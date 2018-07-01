@@ -11,7 +11,6 @@
             - stable
             - edge
         tls_cert_url:
-          type:
           oneOf:
             - type: "null"
             - type: string
@@ -29,6 +28,7 @@
         user:
           type: string
           default: ubuntu
+    instance: "{{ docker }}"
 
 - block:
     - name: "Create /etc/docker"
