@@ -19,3 +19,7 @@
 
 - include_tasks: '{{ docker.command }}.yml'
   when: docker.command is not null
+
+- debug:
+    msg: "jcheroske.docker command was null"
+  when: docker.command is null
