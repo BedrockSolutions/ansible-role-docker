@@ -1,27 +1,17 @@
 ---
 
-- block:
-    - validate:
-        schema:
-          type: object
-          properties:
-            command:
-              oneOf:
-                - type: "null"
-                - type: string
-                  enum:
-                    - firewall
-                    - install
-                    - local_volume
-                    - prune
-                    - swarm
-              default: null
-        instance: "{{ docker }}"
-      register: docker_validated
+- validate:
+    schema:
+      type: object
+      properties:
+        command:
+          type: string
+          enum:
+            - firewall
+            - install
+            - local_volume
+            - prune
+            - swarm
+    instance: "{{ docker }}"
 
-    - include_tasks: '{{ docker_validated.command }}.yml'
-  when: docker is defined
-
-- debug:
-    msg: "docker was not defined"
-  when: docker is not defined
+- include_tasks: '{{ docker.command }}.yml'
