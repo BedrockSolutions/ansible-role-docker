@@ -4,12 +4,6 @@
     schema:
       type: object
       properties:
-        state:
-          type: string
-          enum:
-            - absent
-            - present
-          default: present
         host:
           oneOf:
             - type: string
@@ -19,6 +13,12 @@
         port:
           type: integer
           default: 2377
+        state:
+          type: string
+          enum:
+            - absent
+            - present
+          default: present
         token:
           type: string
     instance: "{{ docker }}"
