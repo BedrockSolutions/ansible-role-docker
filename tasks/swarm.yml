@@ -1,0 +1,45 @@
+---
+
+- validate:
+    schema:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+            - absent
+            - present
+          default: present
+        host:
+          oneOf:
+            - type: string
+              format: hostname
+            - type: string
+              format: ipv4
+        port:
+          type: integer
+          default: 2377
+        token:
+          type: string
+    instance: "{{ docker }}"
+  register: docker_validated
+
+- set_fact:
+    docker: "{{ docker_validated.result }}"
+
+- name: "Get swarm status"
+  command: docker info
+  changed_when: no
+  register: docker_swarm_return
+
+- name: "Join the swarm"
+  command: "docker swarm join --token {{ docker.token }} {{docker.host}}:{{ docker.port }}"
+  when:
+    - docker.state == 'present'
+    - '"Swarm: inactive" in docker_swarm_return.stdout'
+
+- name: "Leave the swarm"
+  command: "docker swarm leave"
+  when:
+    - docker.state == 'absent'
+    - '"Swarm: active" in docker_swarm_return.stdout'
