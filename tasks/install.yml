@@ -67,22 +67,6 @@
         docker_apt_channel: "{{ docker_validated.result.build }}"
         docker_group_members: "{{ docker_validated.result.user }}"
         uninstall_previous_docker_versions: "{{ docker_validated.result.uninstall_previous_versions }}"
-
-    - name: "Enable memory accounting"
-      lineinfile:
-        path: /etc/default/grub
-        regexp: GRUB_CMDLINE_LINUX_DEFAULT
-        line: GRUB_CMDLINE_LINUX_DEFAULT="console=ttyS0 swapaccount=1"
-      notify: reboot
-
-    - name: "Enabling ip forwarding in the kernel"
-      lineinfile:
-        path: /etc/ufw/sysctl.conf
-        regexp: net/ipv4/ip_forward
-        line: net/ipv4/ip_forward=1
-      notify: ufw_reload
-
-    # firewall here
   become: yes
 
 - import_role:

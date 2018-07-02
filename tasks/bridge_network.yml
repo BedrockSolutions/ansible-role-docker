@@ -1,0 +1,22 @@
+---
+
+- validate:
+    schema:
+      type: object
+      properties:
+        name:
+          type: string
+        interface_name:
+          type: string
+    instance: "{{ docker }}"
+
+- name: "Get network information"
+  command: "docker network inspect {{ docker.name }}"
+  register: docker_network_return
+
+- name: "Create the bridge network"
+  command: >
+    docker network create
+    -o "com.docker.network.bridge.name"="{{ docker.interface_name }}"
+    {{ docker.name }}
+  when: not docker_network_return.failed
