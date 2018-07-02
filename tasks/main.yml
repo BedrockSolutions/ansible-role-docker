@@ -1,18 +1,18 @@
 ---
 
-- block:
-    - validate:
-        schema:
-          type: object
-          properties:
-            command:
-              type: string
-              enum:
-                - bridge_network
-                - install
-                - prune_images
-                - swarm
-        instance: "{{ docker }}"
+- validate:
+    schema:
+      type: object
+      properties:
+        command:
+          type: string
+          enum:
+            - bridge_network
+            - dependency
+            - install
+            - prune_images
+            - swarm
+    instance: "{{ docker }}"
 
-    - include_tasks: '{{ docker.command }}.yml'
-  when: dependency is not defined
+- include_tasks: '{{ docker.command }}.yml'
+  when: docker.command is not 'dependency'
