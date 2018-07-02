@@ -15,4 +15,4 @@
     instance: "{{ docker }}"
 
 - include_tasks: '{{ docker.command }}.yml'
-  when: docker.command is not 'dependency'
+  when: docker.command != 'dependency'
