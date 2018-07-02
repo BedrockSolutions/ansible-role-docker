@@ -25,7 +25,7 @@
   register: docker_validated
 
 - set_fact:
-    docker: "{{ docker_validated.result }}"
+    docker_v: "{{ docker_validated.result }}"
 
 - name: "Get swarm status"
   command: docker info
@@ -33,13 +33,13 @@
   register: docker_swarm_return
 
 - name: "Join the swarm"
-  command: "docker swarm join --token {{ docker.token }} {{docker.host}}:{{ docker.port }}"
+  command: "docker swarm join --token {{ docker_v.token }} {{docker_v.host}}:{{ docker_v.port }}"
   when:
-    - docker.state == 'present'
+    - docker_v.state == 'present'
     - '"Swarm: inactive" in docker_swarm_return.stdout'
 
 - name: "Leave the swarm"
   command: "docker swarm leave"
   when:
-    - docker.state == 'absent'
+    - docker_v.state == 'absent'
     - '"Swarm: active" in docker_swarm_return.stdout'

@@ -32,7 +32,7 @@
   register: docker_validated
 
 - set_fact:
-    docker: "{{ docker_validated.result }}"
+    docker_v: "{{ docker_validated.result }}"
 
 - block:
     - name: "Create /etc/docker"
@@ -42,17 +42,17 @@
 
     - name: "Download Docker TLS certificate"
       get_url:
-        url: "{{ docker.tls_cert_url }}"
+        url: "{{ docker_v.tls_cert_url }}"
         dest: /etc/docker/tls_cert.pem
         force: yes
-      when: docker.tls_cert_url is not none
+      when: docker_v.tls_cert_url is not none
 
     - name: "Download Docker TLS key"
       get_url:
-        url: "{{ docker.tls_key_url }}"
+        url: "{{ docker_v.tls_key_url }}"
         dest: /etc/docker/tls_key.pem
         force: yes
-      when: docker.tls_key_url is not none
+      when: docker_v.tls_key_url is not none
 
     - name: "Install Docker and Compose"
       import_role:
@@ -62,14 +62,14 @@
           iptables: no
           ip-forward: yes
           tls: yes
-          tlscert: "{{ docker.tls_cert_url is not none | ternary('/etc/docker/tls_cert.pem', None) }}"
-          tlskey: "{{ docker.tls_key_url is not none | ternary('/etc/docker/tls_key.pem', None) }}"
+          tlscert: "{{ docker_v.tls_cert_url is not none | ternary('/etc/docker/tls_cert.pem', None) }}"
+          tlskey: "{{ docker_v.tls_key_url is not none | ternary('/etc/docker/tls_key.pem', None) }}"
           hosts:
             - tcp://0.0.0.0:2376
-            - unix:///var/run/docker.sock
-        docker_apt_channel: "{{ docker.build }}"
-        docker_group_members: "{{ docker.user }}"
-        uninstall_previous_docker_versions: "{{ docker.uninstall_previous_versions }}"
+            - unix:///var/run/docker_v.sock
+        docker_apt_channel: "{{ docker_v.build }}"
+        docker_group_members: "{{ docker_v.user }}"
+        uninstall_previous_docker_versions: "{{ docker_v.uninstall_previous_versions }}"
 
     - name: "Enable ip forwarding in the kernel"
       lineinfile:

@@ -33,21 +33,21 @@
   register: docker_validated
 
 - set_fact:
-    docker: "{{ docker_validated.result }}"
+    docker_v: "{{ docker_validated.result }}"
 
 - name: "Get network information"
-  command: "docker network inspect {{ docker.name }}"
+  command: "docker network inspect {{ docker_v.name }}"
   register: docker_network_return
 
-- name: "Create the bridge network {{ docker.name }}"
+- name: "Create the bridge network {{ docker_v.name }}"
   command: >
     docker network create
-    {{ docker.gateway is not none | ternary('--gateway=' + docker.gateway, '') }}
-    {{ docker.interface_name is not none | ternary('-o "com.docker.network.bridge.name"="' + docker.interface_name + '"', '') }}
-    {{ docker.subnet is not none | ternary('--subnet=' + docker.subnet, '') }}
-    {{ docker.name }}
-  when: docker_network_return is failed and docker.state == 'present'
+    {{ docker_v.gateway is not none | ternary('--gateway=' + docker_v.gateway, '') }}
+    {{ docker_v.interface_name is not none | ternary('-o "com.docker_v.network.bridge.name"="' + docker_v.interface_name + '"', '') }}
+    {{ docker_v.subnet is not none | ternary('--subnet=' + docker_v.subnet, '') }}
+    {{ docker_v.name }}
+  when: docker_network_return is failed and docker_v.state == 'present'
 
-- name: "Delete the bridge network {{ docker.name }}"
-  command: docker network rm {{ docker.name }}
-  when: docker_network_return is succeeded and docker.state == 'absent'
+- name: "Delete the bridge network {{ docker_v.name }}"
+  command: docker network rm {{ docker_v.name }}
+  when: docker_network_return is succeeded and docker_v.state == 'absent'
