@@ -4,19 +4,50 @@
     schema:
       type: object
       properties:
+        gateway:
+          oneOf:
+            - type: "null"
+            - type: string
+              format: ipv4
+          default: null
+        interface_name:
+          oneOf:
+            - type: "null"
+            - type: string
+          default: null
         name:
           type: string
-        interface_name:
+        state:
           type: string
+          enum:
+            - absent
+            - present
+          default: present
+        subnet:
+          oneOf:
+            - type: "null"
+            - type: string
+              format: ipv4
+          default: null
     instance: "{{ docker }}"
+  register: docker_validated
+
+- set_fact:
+    docker: "{{ docker_validated.result }}"
 
 - name: "Get network information"
   command: "docker network inspect {{ docker.name }}"
   register: docker_network_return
 
-- name: "Create the bridge network"
+- name: "Create the bridge network {{ docker.name }}"
   command: >
     docker network create
-    -o "com.docker.network.bridge.name"="{{ docker.interface_name }}"
+    {{ docker.gateway is not none | ternary('--gateway=' + docker.gateway, '') }}
+    {{ docker.interface_name is not none | ternary('-o "com.docker.network.bridge.name"="' + docker.interface_name + '"', '') }}
+    {{ docker.subnet is not none | ternary('--subnet=' + docker.subnet, '') }}
     {{ docker.name }}
-  when: not docker_network_return.failed
+  when: docker_network_return is failed and docker.state == 'present'
+
+- name: "Delete the bridge network {{ docker.name }}"
+  command: docker network rm {{ docker.name }}
+  when: docker_network_return is succeeded and docker.state == 'absent'

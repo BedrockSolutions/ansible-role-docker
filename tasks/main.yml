@@ -9,12 +9,10 @@
               type: string
               enum:
                 - bridge_network
-                - firewall
                 - install
-                - local_volume
-                - prune
+                - prune_images
                 - swarm
         instance: "{{ docker }}"
 
     - include_tasks: '{{ docker.command }}.yml'
-  when: docker is defined
+  when: not dependency
