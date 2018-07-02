@@ -15,4 +15,4 @@
         instance: "{{ docker }}"
 
     - include_tasks: '{{ docker.command }}.yml'
-  when: not dependency
+  when: dependency is not defined
