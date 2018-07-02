@@ -68,7 +68,7 @@
         docker_group_members: "{{ docker_validated.result.user }}"
         uninstall_previous_docker_versions: "{{ docker_validated.result.uninstall_previous_versions }}"
 
-    - name: "Enabling ip forwarding in the kernel"
+    - name: "Enable ip forwarding in the kernel"
       lineinfile:
         path: /etc/sysctl.conf
         regexp: net.ipv4.ip_forward
@@ -76,7 +76,8 @@
       notify: sysctl_reload
   become: yes
 
-- import_role:
+- name: "Reset the ssh connection to pick up docker group membership"
+  import_role:
     name: jcheroske.common
   vars:
     common:
