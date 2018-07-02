@@ -1,0 +1,6 @@
+---
+
+- name: sysctl_reload
+  service:
+    name: procps
+    state: restarted

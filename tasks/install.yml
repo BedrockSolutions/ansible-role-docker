@@ -67,6 +67,13 @@
         docker_apt_channel: "{{ docker_validated.result.build }}"
         docker_group_members: "{{ docker_validated.result.user }}"
         uninstall_previous_docker_versions: "{{ docker_validated.result.uninstall_previous_versions }}"
+
+    - name: "Enabling ip forwarding in the kernel"
+      lineinfile:
+        path: /etc/sysctl.conf
+        regexp: net.ipv4.ip_forward
+        line: net.ipv4.ip_forward=1
+      notify: sysctl_reload
   become: yes
 
 - import_role:
