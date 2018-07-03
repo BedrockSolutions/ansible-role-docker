@@ -21,6 +21,11 @@
           default: present
         token:
           type: string
+      required:
+        - host
+        - port
+        - state
+        - token
     instance: "{{ docker }}"
   register: docker_validated
 

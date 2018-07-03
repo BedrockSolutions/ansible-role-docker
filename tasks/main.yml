@@ -12,6 +12,8 @@
             - install
             - prune_images
             - swarm
+      required:
+        - command
     instance: "{{ docker }}"
 
 - include_tasks: '{{ docker.command }}.yml'

@@ -5,16 +5,10 @@
       type: object
       properties:
         gateway:
-          oneOf:
-            - type: "null"
-            - type: string
-              format: ipv4
-          default: null
+          type: string
+          format: ipv4
         interface_name:
-          oneOf:
-            - type: "null"
-            - type: string
-          default: null
+          type: string
         name:
           type: string
         state:
@@ -24,11 +18,11 @@
             - present
           default: present
         subnet:
-          oneOf:
-            - type: "null"
-            - type: string
-              format: ipv4
-          default: null
+          type: string
+          format: ipv4
+      required:
+        - name
+        - state
     instance: "{{ docker }}"
   register: docker_validated
 
@@ -42,9 +36,9 @@
 - name: "Create the bridge network {{ docker_v.name }}"
   command: >
     docker network create
-    {{ docker_v.gateway is not none | ternary('--gateway=' + docker_v.gateway, '') }}
-    {{ docker_v.interface_name is not none | ternary('-o "com.docker_v.network.bridge.name"="' + docker_v.interface_name + '"', '') }}
-    {{ docker_v.subnet is not none | ternary('--subnet=' + docker_v.subnet, '') }}
+    {{ 'gateway' in docker_v | ternary('--gateway=' + docker_v.gateway, '') }}
+    {{ 'interface_name' in docker_v | ternary('-o "com.docker_v.network.bridge.name"="' + docker_v.interface_name + '"', '') }}
+    {{ 'subnet' in docker_v | ternary('--subnet=' + docker_v.subnet, '') }}
     {{ docker_v.name }}
   when: docker_network_return is failed and docker_v.state == 'present'
 

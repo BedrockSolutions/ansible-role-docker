@@ -11,23 +11,21 @@
             - stable
             - edge
         tls_cert_url:
-          oneOf:
-            - type: "null"
-            - type: string
-              format: uri
-          default: null
+          type: string
+          format: uri
         tls_key_url:
-          oneOf:
-            - type: "null"
-            - type: string
-              format: uri
-          default: null
+          type: string
+          format: uri
         uninstall_previous_versions:
           type: boolean
           default: true
         user:
           type: string
           default: ubuntu
+      required:
+        - build
+        - uninstall_previous_versions
+        - user
     instance: "{{ docker }}"
   register: docker_validated
 
@@ -45,14 +43,14 @@
         url: "{{ docker_v.tls_cert_url }}"
         dest: /etc/docker/tls_cert.pem
         force: yes
-      when: docker_v.tls_cert_url is not none
+      when: 'tls_cert_url' in docker_v
 
     - name: "Download Docker TLS key"
       get_url:
         url: "{{ docker_v.tls_key_url }}"
         dest: /etc/docker/tls_key.pem
         force: yes
-      when: docker_v.tls_key_url is not none
+      when: 'tls_key_url' in docker_v
 
     - name: "Install Docker and Compose"
       import_role:
@@ -62,8 +60,8 @@
           iptables: no
           ip-forward: yes
           tls: yes
-          tlscert: "{{ docker_v.tls_cert_url is not none | ternary('/etc/docker/tls_cert.pem', None) }}"
-          tlskey: "{{ docker_v.tls_key_url is not none | ternary('/etc/docker/tls_key.pem', None) }}"
+          tlscert: "{{ 'tls_cert_url' in docker_v | ternary('/etc/docker/tls_cert.pem', None) }}"
+          tlskey: "{{ 'tls_key_url' in docker_v | ternary('/etc/docker/tls_key.pem', None) }}"
           hosts:
             - tcp://0.0.0.0:2376
             - unix:///var/run/docker_v.sock
