@@ -52,6 +52,9 @@
         force: yes
       when: "'tls_key_url' in docker_v"
 
+    - debug:
+        var: docker_v
+
     - name: "Install Docker and Compose"
       import_role:
         name: angstwad.docker_ubuntu
@@ -59,9 +62,9 @@
         daemon_json:
           iptables: no
           ip-forward: yes
-          tls: yes
-          tlscert: "{{ 'tls_cert_url' in docker_v | ternary('/etc/docker/tls_cert.pem', None) }}"
-          tlskey: "{{ 'tls_key_url' in docker_v | ternary('/etc/docker/tls_key.pem', None) }}"
+#          tls: yes
+#          tlscert: "{{ 'tls_cert_url' in docker_v | ternary('/etc/docker/tls_cert.pem', None) }}"
+#          tlskey: "{{ 'tls_key_url' in docker_v | ternary('/etc/docker/tls_key.pem', None) }}"
           hosts:
             - tcp://0.0.0.0:2376
             - unix:///var/run/docker_v.sock
