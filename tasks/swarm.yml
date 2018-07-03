@@ -32,6 +32,9 @@
   changed_when: no
   register: docker_swarm_return
 
+- debug:
+    var: docker_v
+
 - name: "Join the swarm"
   command: "docker swarm join --token {{ docker_v.token }} {{docker_v.host}}:{{ docker_v.port }}"
   when:
