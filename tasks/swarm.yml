@@ -5,11 +5,8 @@
       type: object
       properties:
         host:
-          oneOf:
-            - type: string
-              format: hostname
-            - type: string
-              format: ipv4
+          type: string
+          format: hostname
         port:
           type: integer
           default: 2377
