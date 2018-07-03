@@ -43,14 +43,14 @@
         url: "{{ docker_v.tls_cert_url }}"
         dest: /etc/docker/tls_cert.pem
         force: yes
-      when: 'tls_cert_url' in docker_v
+      when: "'tls_cert_url' in docker_v"
 
     - name: "Download Docker TLS key"
       get_url:
         url: "{{ docker_v.tls_key_url }}"
         dest: /etc/docker/tls_key.pem
         force: yes
-      when: 'tls_key_url' in docker_v
+      when: "'tls_key_url' in docker_v"
 
     - name: "Install Docker and Compose"
       import_role:

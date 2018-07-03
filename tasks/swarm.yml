@@ -34,17 +34,14 @@
   changed_when: no
   register: docker_swarm_return
 
-- debug:
-    var: docker_v
-
 - name: "Join the swarm"
   command: "docker swarm join --token {{ docker_v.token }} {{docker_v.host}}:{{ docker_v.port }}"
   when:
     - docker_v.state == 'present'
-    - '"Swarm: inactive" in docker_swarm_return.stdout'
+    - "'Swarm: inactive' in docker_swarm_return.stdout"
 
 - name: "Leave the swarm"
   command: "docker swarm leave"
   when:
     - docker_v.state == 'absent'
-    - '"Swarm: active" in docker_swarm_return.stdout'
+    - "'Swarm: active' in docker_swarm_return.stdout"
