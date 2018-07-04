@@ -6,4 +6,4 @@
     state: restarted
 
 - name: grub_update
-  command: update_grub
+  command: update-grub
