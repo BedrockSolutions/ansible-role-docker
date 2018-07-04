@@ -67,7 +67,7 @@
           tlskey: "{{ ('tls_key_url' in docker_v) | ternary('/etc/docker/tls_key.pem', None) }}"
           hosts:
             - tcp://0.0.0.0:2376
-            - unix:///var/run/docker_v.sock
+            - unix:///var/run/docker.sock
         docker_apt_channel: "{{ docker_v.build }}"
         docker_group_members: "{{ docker_v.user }}"
         uninstall_previous_docker_versions: "{{ docker_v.uninstall_previous_versions }}"
