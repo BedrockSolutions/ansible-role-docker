@@ -32,8 +32,8 @@
   import_role:
     name: jcheroske.common
   vars:
-    common: format_device
-      command:
+    common:
+      command: format_device
       device: "{{ docker_v.device }}"
       filesystem: "{{ docker_v.filesystem }}"
   become: yes
