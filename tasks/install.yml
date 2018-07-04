@@ -1,8 +1,5 @@
 ---
 
-- debug:
-    var: docker
-
 - validate:
     schema:
       type: object
@@ -29,9 +26,6 @@
         - user
     instance: "{{ docker }}"
   register: docker_validated
-
-- debug:
-    var: docker_validated
 
 - set_fact:
     docker_v: "{{ docker_validated.result }}"
