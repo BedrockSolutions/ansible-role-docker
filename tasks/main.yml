@@ -8,8 +8,10 @@
           type: string
           enum:
             - bridge_network
+            - download_tls_keys
             - dependency
             - install
+            - local_volume_from_device
             - prune_images
             - swarm
       required:

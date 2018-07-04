@@ -10,12 +10,9 @@
           enum:
             - stable
             - edge
-        tls_cert_url:
-          type: string
-          format: uri
-        tls_key_url:
-          type: string
-          format: uri
+        tls:
+          type: boolean
+          default: yes
         uninstall_previous_versions:
           type: boolean
           default: true
@@ -24,6 +21,7 @@
           default: ubuntu
       required:
         - build
+        - tls
         - uninstall_previous_versions
         - user
     instance: "{{ docker }}"
@@ -33,28 +31,6 @@
     docker_v: "{{ docker_validated.result }}"
 
 - block:
-    - name: "Create /etc/docker"
-      file:
-        path: /etc/docker
-        state: directory
-
-    - name: "Download Docker TLS certificate"
-      get_url:
-        url: "{{ docker_v.tls_cert_url }}"
-        dest: /etc/docker/tls_cert.pem
-        force: yes
-      when: "'tls_cert_url' in docker_v"
-
-    - name: "Download Docker TLS key"
-      get_url:
-        url: "{{ docker_v.tls_key_url }}"
-        dest: /etc/docker/tls_key.pem
-        force: yes
-      when: "'tls_key_url' in docker_v"
-
-    - debug:
-        var: docker_v
-
     - name: "Install Docker and Compose"
       import_role:
         name: angstwad.docker_ubuntu
@@ -62,9 +38,9 @@
         daemon_json:
           iptables: yes
           ip-forward: yes
-          tls: yes
-          tlscert: "{{ ('tls_cert_url' in docker_v) | ternary('/etc/docker/tls_cert.pem', None) }}"
-          tlskey: "{{ ('tls_key_url' in docker_v) | ternary('/etc/docker/tls_key.pem', None) }}"
+          tls: "{{ docker_v.tls }}"
+          tlscert: "{{ docker_v.tls | ternary('/etc/docker/tls_cert.pem', None) }}"
+          tlskey: "{{ docker_v.tls | ternary('/etc/docker/tls_key.pem', None) }}"
           hosts:
             - tcp://0.0.0.0:2376
             - unix:///var/run/docker.sock
@@ -78,6 +54,15 @@
         regexp: net.ipv4.ip_forward
         line: net.ipv4.ip_forward=1
       notify: sysctl_reload
+
+    - name: "Enabling memory accounting"
+      lineinfile:
+        path: /etc/default/grub
+        regexp: GRUB_CMDLINE_LINUX_DEFAULT
+        line: GRUB_CMDLINE_LINUX_DEFAULT="cgroup_enable=memory swapaccount=1"
+      notify:
+        - grub_update
+        - reboot
   become: yes
 
 - name: "Reset the ssh connection to pick up docker group membership"

@@ -1,0 +1,49 @@
+---
+
+- validate:
+    schema:
+      type: object
+      properties:
+        device:
+          type: string
+        filesystem:
+          type: string
+          default: ext4
+        name:
+          type: string
+        state:
+          type: string
+          enum:
+            - absent
+            - present
+          default: present
+      required:
+        - device
+        - filesystem
+        - name
+        - state
+    instance: "{{ docker }}"
+  register: docker_validated
+
+- set_fact:
+    docker_v: "{{ docker_validated.result }}"
+
+- name: "Format device {{ docker_v.device }}"
+  import_role:
+    name: jcheroske.common
+  vars:
+    common: format_device
+      command:
+      device: "{{ docker_v.device }}"
+      filesystem: "{{ docker_v.filesystem }}"
+  become: yes
+  when: docker_v.state == 'present'
+
+- name: "Create volume {{ docker_v.name }} from device {{ docker_v.device }}"
+  docker_volume:
+    driver: local
+    driver_options:
+      device: "{{ docker_v.device }}"
+      type: "{{ docker_v.filesystem }}"
+    state: "{{ docker_v.state }}"
+    volume_name: "{{ docker_v.name }}"
