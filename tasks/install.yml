@@ -6,10 +6,10 @@
       properties:
         build:
           type: string
-          default: stable
           enum:
             - stable
             - edge
+          default: stable
         tls:
           type: boolean
           default: true
