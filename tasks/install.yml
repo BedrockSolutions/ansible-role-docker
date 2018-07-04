@@ -12,7 +12,7 @@
             - edge
         tls:
           type: boolean
-          default: yes
+          default: true
         uninstall_previous_versions:
           type: boolean
           default: true
