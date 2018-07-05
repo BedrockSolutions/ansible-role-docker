@@ -1,23 +1,19 @@
 # jcheroske.ansible_role_docker
 
 Ansible role that performs several docker-related functions, 
-including installation and firewall configuration.
+including installation.
 
 ## Dependencies
 
-Add `angstwad.docker_ubuntu` to `requirements.yml`:
+`angstwad.docker_ubuntu` from Ansible Galaxy. Add to `requirements.yml`:
+
 ```yaml
 - src: angstwad.docker_ubuntu
 ```
 
-`ufw` firewall:
-```bash
-sudo apt install ufw
-```
-
 ## Installation
 
-### Client role
+### When using in another role:
 
 In a client role, create the file `./meta/main.yml` with the 
 following structure:
@@ -26,68 +22,50 @@ following structure:
 
 ---
 dependencies:
-  - { role: jcheroske.ansible_role_docker }
+  - name: jcheroske.docker
+    scm: git
+    src: git@github.com:jcheroske/ansible-role-docker.git
+    vars:
+      docker:
+        command: dependency
+   version: master
 ```
 
-### Direct playbook usage
+### When using in a playbook:
 
 Add the role to `requirements.yml`:
 
 ```yaml
-- src: jcheroske.ansible_role_docker
+  - name: jcheroske.docker
+    scm: git
+    src: git@github.com:jcheroske/ansible-role-docker.git
+    version: master
 ```
 
-## Usage
+## Tasks/Commands
 
-The role is invoked by importing/including the role, specifying a 
-command and passing associated variables, all within the `docker`
-namespace.
+### `install`
 
-```yaml
-- import_role:
-    name: jcheroske.ansible_role_docker
-  vars:
-    docker:
-      command: some_command
-      foo: true
-      bar: "blah"
-
-```
-
-### Commands
-
-#### install
-
-Completely installs docker
+Installs docker, docker compose, and configures a `systemd` service.
 
 ##### Variables
 
-* `build`: the docker build to install
-  * type: `string`
-  * enum: `stable` or `edge`
-  * default: `stable`
-  * required: `yes`
+* `build` __(string)__ the docker build to install
+  * enum: `['edge', 'stable']`
+  * default: `'stable'`
   
-* `tls_cert_url`: url to a docker daemon tls certificate
-  * type: `string`
+* `tls_cert_url` __(string)?__ url to a docker daemon TLS certificate
   * format: `uri`
-  * required: `no`
 
-* `tls_key_url`: url to a docker daemon tls key
-  * type: `string`
+* `tls_key_url` __(string)?__ url to a docker daemon TLS key
   * format: `uri`
-  * required: `no`
 
-* `uninstall_previous_versions`: should previous installations of
-docker be unintalled?
-  * type: `boolean`
+* `uninstall_previous_versions` __(boolean)__ should previous installations of
+docker be uninstalled?
   * default: `true`
-  * required: `yes`
 
-* `user`: user to add to the `docker` group
-  * type: `string`
-  * default: ubuntu
-  * required: `yes`
+* `user` __(string)__ user to add to the `docker` group
+  * default: `'ubuntu'`
 
 ##### Example
     
