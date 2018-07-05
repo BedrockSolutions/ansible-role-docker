@@ -64,21 +64,21 @@
         pip_install_docker_compose: "{{ docker_v.install_compose }}"
         uninstall_previous_docker_versions: true
 
-#    - name: "Enable ip forwarding in the kernel"
-#      lineinfile:
-#        path: /etc/sysctl.conf
-#        regexp: net.ipv4.ip_forward
-#        line: net.ipv4.ip_forward=1
-#      notify: sysctl_reload
+    - name: "Enable ip forwarding in the kernel"
+      lineinfile:
+        path: /etc/sysctl.conf
+        regexp: net.ipv4.ip_forward
+        line: net.ipv4.ip_forward=1
+      notify: sysctl_reload
 
-#    - name: "Enabling memory accounting"
-#      lineinfile:
-#        path: /etc/default/grub
-#        regexp: GRUB_CMDLINE_LINUX_DEFAULT
-#        line: GRUB_CMDLINE_LINUX_DEFAULT="cgroup_enable=memory swapaccount=1"
-#      notify:
-#        - grub_update
-#        - reboot
+    - name: "Enabling memory accounting"
+      lineinfile:
+        path: /etc/default/grub
+        regexp: GRUB_CMDLINE_LINUX_DEFAULT
+        line: GRUB_CMDLINE_LINUX_DEFAULT="cgroup_enable=memory swapaccount=1"
+      notify:
+        - grub_update
+        - reboot
   become: yes
 
 - name: "Reset the ssh connection to pick up docker group membership"
