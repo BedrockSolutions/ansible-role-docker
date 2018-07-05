@@ -87,7 +87,7 @@ to install
     * enum: `['ce', 'ee']`
     * default: `'ce'`
 
-* `enable_tls`:__ enable TLS encryption
+* __`enable_tls`:__ enable TLS encryption
     * type: boolean
     * default: `true`
     * expects the following files:
@@ -95,7 +95,7 @@ to install
         * `/etc/docker/tls_key.pem`
   
 * __`install_compose`:__ install compose
-    * type: string
+    * type: boolean
     * default: `false`
   
 * __`manipulate_iptables`:__ enable iptables manipulation
