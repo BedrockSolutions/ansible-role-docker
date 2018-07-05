@@ -168,7 +168,7 @@ Prunes all unused images
 
 ### `swarm_node`
 
-Manages swarm membership
+Manages membership for a swarm node
 
 #### Variables
 
@@ -187,3 +187,15 @@ Manages swarm membership
 
 * __`token`__ the swarm entry token
     * type: string
+
+#### Example
+
+```yaml
+- import_role:
+    name: jcheroske.ansible_role_docker
+  vars:
+    docker:
+      command: swarm_node
+      manager_host: 1.2.3.4
+      token: "{{ my_swarm_token }}"
+```
