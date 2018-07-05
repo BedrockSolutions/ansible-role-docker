@@ -66,6 +66,8 @@ Fetches a TLS certificate and key, and saves them to `/etc/docker`.
   vars:
     docker:
       command: download_tls_cert_and_key
+      cert_url: http://foo.com/my_tls_cert.pem
+      key_url: http://foo.com/my_tls_key.pem
 ```
   
 ### `install`
