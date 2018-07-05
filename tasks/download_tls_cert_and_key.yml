@@ -4,15 +4,15 @@
     schema:
       type: object
       properties:
-        tls_cert_url:
+        cert_url:
           type: string
           format: uri
-        tls_key_url:
+        key_url:
           type: string
           format: uri
       required:
-        - tls_cert_url
-        - tls_key_url
+        - cert_url
+        - key_url
     instance: "{{ docker }}"
   register: docker_validated
 
@@ -27,13 +27,13 @@
 
     - name: "Download Docker TLS certificate"
       get_url:
-        url: "{{ docker_v.tls_cert_url }}"
+        url: "{{ docker_v.cert_url }}"
         dest: /etc/docker/tls_cert.pem
         force: yes
 
     - name: "Download Docker TLS key"
       get_url:
-        url: "{{ docker_v.tls_key_url }}"
+        url: "{{ docker_v.key_url }}"
         dest: /etc/docker/tls_key.pem
         force: yes
   become: yes

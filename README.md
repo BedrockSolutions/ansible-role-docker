@@ -44,30 +44,67 @@ Add the role to `requirements.yml`:
 
 ## Tasks/Commands
 
+### `download_tls_cert_and_key`
+
+Fetches a TLS certificate and key, and saves them to `/etc/docker`.
+
+#### Variables
+
+* __`cert_url`:__ the certificate's URL
+    * type: string
+    * saved to `/etc/docker/tls_cert.pem`
+  
+* __`key_url`:__ the key's URL
+    * type: string
+    * saved to `/etc/docker/tls_key.pem`
+
+#### Example
+
+```yaml
+- import_role:
+    name: jcheroske.ansible_role_docker
+  vars:
+    docker:
+      command: download_tls_cert_and_key
+```
+  
 ### `install`
 
-Installs docker, docker compose, and configures a `systemd` service.
+Installs docker and configures a `systemd` service.
 
-##### Variables
+#### Variables
 
-* `build` __(string)__ the docker build to install
-  * enum: `['edge', 'stable']`
-  * default: `'stable'`
+* __`build`:__ the docker build to install
+    * type: string
+    * enum: `['edge', 'stable']`
+    * default: `'stable'`
   
-* `tls_cert_url` __(string)?__ url to a docker daemon TLS certificate
-  * format: `uri`
+* __`edition`:__ the docker edition (community or enterprise)
+to install
+    * type: string
+    * enum: `['ce', 'ee']`
+    * default: `'ce'`
 
-* `tls_key_url` __(string)?__ url to a docker daemon TLS key
-  * format: `uri`
+* `enable_tls`:__ enable TLS encryption
+    * type: boolean
+    * default: `true`
+    * expects the following files:
+        * `/etc/docker/tls_cert.pem`
+        * `/etc/docker/tls_key.pem`
+  
+* __`install_compose`:__ install compose
+    * type: string
+    * default: `false`
+  
+* __`manipulate_iptables`:__ enable iptables manipulation
+    * type: boolean
+    * default: `true`
 
-* `uninstall_previous_versions` __(boolean)__ should previous installations of
-docker be uninstalled?
-  * default: `true`
+* __`user`__ user to add to the `docker` group
+    * type: string
+    * default: `'ubuntu'`
 
-* `user` __(string)__ user to add to the `docker` group
-  * default: `'ubuntu'`
-
-##### Example
+#### Example
     
 ```yaml
 - import_role:
@@ -75,7 +112,78 @@ docker be uninstalled?
   vars:
     docker:
       command: install
-      tls_cert_url: http://foo.com/docker_cert.pem
-      tls_key_url: http://foo.com/docker_key.pem
-      user: ubuntu
 ```
+
+### `local_volume_from_device`
+
+Manages a local docker volume created from an entire device.
+> Using devices as volumes is simple, avoids the need to partition,
+and dovetails well with cloud provider persistent disk 
+administration.
+
+#### Variables
+
+* __`device`__ the device to use
+    * type: string
+
+* __`filesystem`__ the filesystem to create on the device
+    * type: string
+    * default: `'ext4'`
+    * delegates to `jcheroske.common:format_device` to perform
+the formatting
+
+* __`name`__ the volume name
+    * type: string
+
+* __`state`__ create or delete the volume
+    * type: string
+    * enum: `['absent', 'present']`
+    * default: `'present'`
+
+#### Example
+
+```yaml
+- import_role:
+    name: jcheroske.ansible_role_docker
+  vars:
+    docker:
+      command: local_volume_from_device
+      device: /dev/sdb
+      name: factom_database
+```
+
+### `prune_images`
+
+Prunes all unused images
+
+#### Example
+
+```yaml
+- import_role:
+    name: jcheroske.ansible_role_docker
+  vars:
+    docker:
+      command: prune_images
+```
+
+### `swarm_node`
+
+Manages swarm membership
+
+#### Variables
+
+* __`manager_host`__ the swarm manager host or ip
+    * type: string
+    * format: hostname
+
+* __`manager_port`__ the swarm manager port
+    * type: integer
+    * default: `2377`
+
+* __`state`__ join or leave the swarm
+    * type: string
+    * enum: `['absent', 'present']`
+    * default: `'present'`
+
+* __`token`__ the swarm entry token
+    * type: string

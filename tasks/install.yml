@@ -16,13 +16,13 @@
             - ce
             - ee
           default: ce
+        enable_tls:
+          type: boolean
+          default: true
         install_compose:
           type: boolean
           default: false
-        iptables:
-          type: boolean
-          default: true
-        tls:
+        manipulate_iptables:
           type: boolean
           default: true
         user:
@@ -30,8 +30,10 @@
           default: ubuntu
       required:
         - build
-        - iptables
-        - tls
+        - edition
+        - enable_tls
+        - install_compose
+        - manipulate_iptables
         - user
     instance: "{{ docker }}"
   register: docker_validated
@@ -40,19 +42,19 @@
     docker_v: "{{ docker_validated.result }}"
 
 - block:
-    - name: "Install Docker and Compose"
+    - name: "Install Docker"
       import_role:
         name: angstwad.docker_ubuntu
       vars:
         daemon_json:
-          iptables: "{{ docker_v.iptables }}"
+          iptables: "{{ docker_v.manipulate_iptables }}"
           ip-forward: yes
-          tls: "{{ docker_v.tls }}"
-          tlscert: "{{ docker_v.tls | ternary('/etc/docker/tls_cert.pem', None) }}"
-          tlskey: "{{ docker_v.tls | ternary('/etc/docker/tls_key.pem', None) }}"
-          tlsverify: "{{ docker_v.tls | ternary(true, None) }}"
+          tls: "{{ docker_v.enable_tls }}"
+          tlscert: "{{ docker_v.enable_tls | ternary('/etc/docker/tls_cert.pem', None) }}"
+          tlskey: "{{ docker_v.enable_tls | ternary('/etc/docker/tls_key.pem', None) }}"
+          tlsverify: "{{ docker_v.enable_tls | ternary(true, None) }}"
           hosts:
-            - "tcp://0.0.0.0:{{ docker_v.tls | ternary('2376', '2375') }}"
+            - "tcp://0.0.0.0:{{ docker_v.enable_tls | ternary('2376', '2375') }}"
             - fd://
         docker_apt_channel: "{{ docker_v.build }}"
         docker_edition: "{{ docker_v.edition }}"
@@ -67,7 +69,7 @@
         line: net.ipv4.ip_forward=1
       notify: sysctl_reload
 
-    - name: "Enabling memory accounting"
+    - name: "Enable memory and swap accounting"
       lineinfile:
         path: /etc/default/grub
         regexp: GRUB_CMDLINE_LINUX_DEFAULT

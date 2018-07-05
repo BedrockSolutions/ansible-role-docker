@@ -4,12 +4,14 @@
     schema:
       type: object
       properties:
-        host:
+        manager_host:
           type: string
           format: hostname
-        port:
+        manager_port:
           type: integer
           default: 2377
+          minimum: 1
+          maximum: 65535
         state:
           type: string
           enum:
@@ -19,8 +21,8 @@
         token:
           type: string
       required:
-        - host
-        - port
+        - manager_host
+        - manager_port
         - state
         - token
     instance: "{{ docker }}"
@@ -35,7 +37,7 @@
   register: docker_swarm_return
 
 - name: "Join the swarm"
-  command: "docker swarm join --token {{ docker_v.token }} {{docker_v.host}}:{{ docker_v.port }}"
+  command: "docker swarm join --token {{ docker_v.token }} {{docker_v.manager_host}}:{{ docker_v.manager_port }}"
   when:
     - docker_v.state == 'present'
     - "'Swarm: inactive' in docker_swarm_return.stdout"

@@ -37,9 +37,9 @@
       device: "{{ docker_v.device }}"
       filesystem: "{{ docker_v.filesystem }}"
   become: yes
-  when: docker_v.state == 'present'
+  when: docker_v.state == 'present
 
-- name: "Create volume {{ docker_v.name }} from device {{ docker_v.device }}"
+- name: "Mange volume {{ docker_v.name }} on device {{ docker_v.device }}: {{ docker_v.state }}"
   docker_volume:
     driver: local
     driver_options:
