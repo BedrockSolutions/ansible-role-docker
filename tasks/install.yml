@@ -10,13 +10,22 @@
             - stable
             - edge
           default: stable
+        edition:
+          type: string
+          enum:
+            - ce
+            - ee
+          default: ce
+        install_compose:
+          type: boolean
+          default: false
         iptables:
           type: boolean
           default: true
-        tls:
+        kernel_update_and_reboot_permitted:
           type: boolean
           default: true
-        uninstall_previous_versions:
+        tls:
           type: boolean
           default: true
         user:
@@ -26,7 +35,6 @@
         - build
         - iptables
         - tls
-        - uninstall_previous_versions
         - user
     instance: "{{ docker }}"
   register: docker_validated
@@ -40,7 +48,7 @@
         name: angstwad.docker_ubuntu
       vars:
         daemon_json:
-          iptables: yes
+          iptables: "{{ docker_v.iptables }}"
           ip-forward: yes
           tls: "{{ docker_v.tls }}"
           tlscert: "{{ docker_v.tls | ternary('/etc/docker/tls_cert.pem', None) }}"
@@ -50,8 +58,11 @@
             - "tcp://0.0.0.0:{{ docker_v.tls | ternary('2376', '2375') }}"
             - fd://
         docker_apt_channel: "{{ docker_v.build }}"
+        docker_edition: "{{ docker_v.edition }}"
         docker_group_members: "{{ docker_v.user }}"
-        uninstall_previous_docker_versions: "{{ docker_v.uninstall_previous_versions }}"
+        kernel_update_and_reboot_permitted: "{{ docker_v.kernel_update_and_reboot_permitted }}"
+        pip_install_docker_compose: "{{ docker_v.install_compose }}"
+        uninstall_previous_docker_versions: true
 
     - name: "Enable ip forwarding in the kernel"
       lineinfile:
