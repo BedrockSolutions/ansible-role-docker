@@ -47,7 +47,7 @@
           tlskey: "{{ docker_v.tls | ternary('/etc/docker/tls_key.pem', None) }}"
           tlsverify: "{{ docker_v.tls | ternary(true, None) }}"
           hosts:
-            - "tcp://0.0.0.0:{{ docker_v.tls | ternary('2376', '2375' }}"
+            - "tcp://0.0.0.0:{{ docker_v.tls | ternary('2376', '2375') }}"
             - fd://
         docker_apt_channel: "{{ docker_v.build }}"
         docker_group_members: "{{ docker_v.user }}"
