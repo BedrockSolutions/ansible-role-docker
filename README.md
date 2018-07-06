@@ -1,4 +1,4 @@
-# jcheroske.ansible_role_docker
+# jcheroske.docker
 
 Ansible role that performs several docker-related functions, 
 including installation.
@@ -62,7 +62,7 @@ Fetches a TLS certificate and key, and saves them to `/etc/docker`.
 
 ```yaml
 - import_role:
-    name: jcheroske.ansible_role_docker
+    name: jcheroske.docker
   vars:
     docker:
       command: download_tls_cert_and_key
@@ -110,7 +110,7 @@ to install
     
 ```yaml
 - import_role:
-    name: jcheroske.ansible_role_docker
+    name: jcheroske.docker
   vars:
     docker:
       command: install
@@ -146,7 +146,7 @@ the formatting
 
 ```yaml
 - import_role:
-    name: jcheroske.ansible_role_docker
+    name: jcheroske.docker
   vars:
     docker:
       command: local_volume_from_device
@@ -162,7 +162,7 @@ Prunes all unused images
 
 ```yaml
 - import_role:
-    name: jcheroske.ansible_role_docker
+    name: jcheroske.docker
   vars:
     docker:
       command: prune_images
@@ -194,7 +194,7 @@ Manages membership for a swarm node
 
 ```yaml
 - import_role:
-    name: jcheroske.ansible_role_docker
+    name: jcheroske.docker
   vars:
     docker:
       command: swarm_node
