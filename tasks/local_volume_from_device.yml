@@ -6,9 +6,6 @@
       properties:
         device:
           type: string
-        filesystem:
-          type: string
-          default: ext4
         name:
           type: string
         state:
@@ -29,13 +26,10 @@
     docker_v: "{{ docker_validated.result }}"
 
 - name: "Format device {{ docker_v.device }}"
-  import_role:
-    name: jcheroske.common
-  vars:
-    common:
-      command: format_device
-      device: "{{ docker_v.device }}"
-      filesystem: "{{ docker_v.filesystem }}"
+  filesystem:
+    fstype: ext4
+    dev: "{{ docker_v.device }}"
+    opts: -m 0 -F -E lazy_itable_init=0,lazy_journal_init=0,discard
   become: yes
   when: docker_v.state == 'present'
 

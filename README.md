@@ -128,12 +128,6 @@ administration.
 * __`device`__ the device to use
     * type: string
 
-* __`filesystem`__ the filesystem to create on the device
-    * type: string
-    * default: `'ext4'`
-    * delegates to `jcheroske.common:format_device` to perform
-the formatting
-
 * __`name`__ the volume name
     * type: string
 
