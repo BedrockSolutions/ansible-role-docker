@@ -37,6 +37,6 @@
     driver: local
     driver_options:
       device: "{{ docker_v.device }}"
-      type: "{{ docker_v.filesystem }}"
+      type: ext4
     state: "{{ docker_v.state }}"
     volume_name: "{{ docker_v.name }}"
