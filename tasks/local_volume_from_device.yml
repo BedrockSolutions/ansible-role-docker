@@ -16,7 +16,6 @@
           default: present
       required:
         - device
-        - filesystem
         - name
         - state
     instance: "{{ docker }}"
