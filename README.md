@@ -118,16 +118,16 @@ to install
 
 ### `local_volume_from_device`
 
-Manages a local docker volume created from an entire device.
-> Using devices as volumes is simple, avoids the need to partition,
-and dovetails well with cloud provider persistent disk 
-administration.
+Manages a local docker volume created from a device.
 
 #### Variables
 
 * __`device`__ the device to use
     * type: string
 
+* __`mount_point`__ an optional mount point for the device
+    * type: string
+    
 * __`name`__ the volume name
     * type: string
 
