@@ -37,7 +37,7 @@
         path: "{{ docker_v.mount_point }}"
         src: "{{ docker_v.device }}"
         state: mounted
-      when: "mount_point" in docker_v
+      when: "'mount_point' in docker_v"
   become: yes
   when: docker_v.state == 'present'
 
