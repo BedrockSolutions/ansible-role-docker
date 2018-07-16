@@ -23,6 +23,9 @@
     instance: "{{ docker }}"
   register: docker_validated
 
+- set_fact:
+    docker_v: "{{ docker_validated.result }}"
+
 - block:
     - name: "Format device {{ docker_v.device }}"
       filesystem:
