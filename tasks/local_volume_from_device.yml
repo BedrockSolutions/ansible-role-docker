@@ -29,7 +29,6 @@
         fstype: ext4
         dev: "{{ docker_v.device }}"
         opts: -m 0 -F -E lazy_itable_init=0,lazy_journal_init=0,discard
-      become: yes
 
     - name: "Mount {{ docker_v.device }} to {{ docker_v.mount_point }}"
       mount:
@@ -38,8 +37,8 @@
         path: "{{ docker_v.mount_point }}"
         src: "{{ docker_v.device }}"
         state: mounted
-      become: yes
-      when: 'mount_point' in docker_v
+      when: "mount_point" in docker_v
+  become: yes
   when: docker_v.state == 'present'
 
 - name: "Mange volume {{ docker_v.name }} on device {{ docker_v.device }}: {{ docker_v.state }}"
