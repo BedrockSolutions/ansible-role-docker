@@ -4,3 +4,5 @@
   command: docker image prune -af
   register: docker_prune_images_return
   changed_when: "'Total reclaimed space: 0B' not in docker_prune_images_return.stdout"
+  tags:
+    - docker_prune_images
