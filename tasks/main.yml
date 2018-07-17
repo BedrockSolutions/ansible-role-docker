@@ -19,4 +19,6 @@
     instance: "{{ docker }}"
 
 - include_tasks: '{{ docker.command }}.yml'
+  tags:
+    - docker
   when: docker.command != 'dependency'

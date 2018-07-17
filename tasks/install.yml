@@ -42,46 +42,49 @@
     docker_v: "{{ docker_validated.result }}"
 
 - block:
-    - name: "Install Docker"
+    - block:
+        - name: "Install Docker"
+          import_role:
+            name: angstwad.docker_ubuntu
+          vars:
+            daemon_json:
+              iptables: "{{ docker_v.manipulate_iptables }}"
+              ip-forward: yes
+              tls: "{{ docker_v.enable_tls }}"
+              tlscert: "{{ docker_v.enable_tls | ternary('/etc/docker/tls_cert.pem', None) }}"
+              tlskey: "{{ docker_v.enable_tls | ternary('/etc/docker/tls_key.pem', None) }}"
+              tlsverify: "{{ docker_v.enable_tls | ternary(true, None) }}"
+              hosts:
+                - "tcp://0.0.0.0:{{ docker_v.enable_tls | ternary('2376', '2375') }}"
+                - fd://
+            docker_apt_channel: "{{ docker_v.build }}"
+            docker_edition: "{{ docker_v.edition }}"
+            docker_group_members: "{{ docker_v.user }}"
+            pip_install_docker_compose: "{{ docker_v.install_compose }}"
+            uninstall_previous_docker_versions: true
+
+        - name: "Enable ip forwarding in the kernel"
+          lineinfile:
+            path: /etc/sysctl.conf
+            regexp: net.ipv4.ip_forward
+            line: net.ipv4.ip_forward=1
+          notify: sysctl_reload
+
+        - name: "Enable memory and swap accounting"
+          lineinfile:
+            path: /etc/default/grub
+            regexp: GRUB_CMDLINE_LINUX_DEFAULT
+            line: GRUB_CMDLINE_LINUX_DEFAULT="cgroup_enable=memory swapaccount=1"
+          notify:
+            - grub_update
+            - reboot
+      become: yes
+
+    - name: "Reset the ssh connection to pick up docker group membership"
       import_role:
-        name: angstwad.docker_ubuntu
+        name: jcheroske.common
       vars:
-        daemon_json:
-          iptables: "{{ docker_v.manipulate_iptables }}"
-          ip-forward: yes
-          tls: "{{ docker_v.enable_tls }}"
-          tlscert: "{{ docker_v.enable_tls | ternary('/etc/docker/tls_cert.pem', None) }}"
-          tlskey: "{{ docker_v.enable_tls | ternary('/etc/docker/tls_key.pem', None) }}"
-          tlsverify: "{{ docker_v.enable_tls | ternary(true, None) }}"
-          hosts:
-            - "tcp://0.0.0.0:{{ docker_v.enable_tls | ternary('2376', '2375') }}"
-            - fd://
-        docker_apt_channel: "{{ docker_v.build }}"
-        docker_edition: "{{ docker_v.edition }}"
-        docker_group_members: "{{ docker_v.user }}"
-        pip_install_docker_compose: "{{ docker_v.install_compose }}"
-        uninstall_previous_docker_versions: true
-
-    - name: "Enable ip forwarding in the kernel"
-      lineinfile:
-        path: /etc/sysctl.conf
-        regexp: net.ipv4.ip_forward
-        line: net.ipv4.ip_forward=1
-      notify: sysctl_reload
-
-    - name: "Enable memory and swap accounting"
-      lineinfile:
-        path: /etc/default/grub
-        regexp: GRUB_CMDLINE_LINUX_DEFAULT
-        line: GRUB_CMDLINE_LINUX_DEFAULT="cgroup_enable=memory swapaccount=1"
-      notify:
-        - grub_update
-        - reboot
-  become: yes
-
-- name: "Reset the ssh connection to pick up docker group membership"
-  import_role:
-    name: jcheroske.common
-  vars:
-    common:
-      command: controller_reset_connection
+        common:
+          command: controller_reset_connection
+  tags:
+    - docker_install
