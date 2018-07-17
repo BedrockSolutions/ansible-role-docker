@@ -1,47 +1,47 @@
 ---
 
-- validate:
-    schema:
-      type: object
-      properties:
-        build:
-          type: string
-          enum:
-            - stable
-            - edge
-          default: stable
-        edition:
-          type: string
-          enum:
-            - ce
-            - ee
-          default: ce
-        enable_tls:
-          type: boolean
-          default: true
-        install_compose:
-          type: boolean
-          default: false
-        manipulate_iptables:
-          type: boolean
-          default: true
-        user:
-          type: string
-          default: ubuntu
-      required:
-        - build
-        - edition
-        - enable_tls
-        - install_compose
-        - manipulate_iptables
-        - user
-    instance: "{{ docker }}"
-  register: docker_validated
-
-- set_fact:
-    docker_v: "{{ docker_validated.result }}"
-
 - block:
+    - validate:
+        schema:
+          type: object
+          properties:
+            build:
+              type: string
+              enum:
+                - stable
+                - edge
+              default: stable
+            edition:
+              type: string
+              enum:
+                - ce
+                - ee
+              default: ce
+            enable_tls:
+              type: boolean
+              default: true
+            install_compose:
+              type: boolean
+              default: false
+            manipulate_iptables:
+              type: boolean
+              default: true
+            user:
+              type: string
+              default: ubuntu
+          required:
+            - build
+            - edition
+            - enable_tls
+            - install_compose
+            - manipulate_iptables
+            - user
+        instance: "{{ docker }}"
+      register: docker_validated
+
+    - set_fact:
+        docker_v: "{{ docker_validated.result }}"
+
     - block:
         - name: "Install Docker"
           import_role:
