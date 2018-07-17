@@ -1,6 +1,6 @@
 ---
 
--block:
+- block:
     - validate:
         schema:
           type: object
