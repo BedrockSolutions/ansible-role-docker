@@ -1,11 +1,5 @@
 ---
 
-- name: sysctl_reload
-  service:
-    name: procps
-    state: restarted
-  become: yes
-
 - name: grub_update
   command: update-grub
   become: yes
