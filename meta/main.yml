@@ -8,3 +8,10 @@ dependencies:
       common:
         command: dependency
     version: master
+
+  - name: angstwad.docker_ubuntu
+    scm: git
+    src: https://github.com/BedrockSolutions/docker.ubuntu.git
+    vars:
+      docker_ubuntu_enabled: no
+    version: master
