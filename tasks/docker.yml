@@ -1,0 +1,24 @@
+---
+
+- block:
+    - validate:
+        schema:
+          type: object
+          properties:
+            command:
+              type: string
+              enum:
+                - bridge_network
+                - download_tls_cert_and_key
+                - dependency
+                - install
+                - local_volume_from_device
+                - prune_images
+                - swarm_worker_node
+          required:
+            - command
+        instance: "{{ docker }}"
+
+    - include_tasks: '{{ docker.command }}.yml'
+  tags:
+    - docker
