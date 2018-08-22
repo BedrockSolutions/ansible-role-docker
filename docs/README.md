@@ -11,7 +11,7 @@ https://bedrocksolutions.github.io/ansible-role-docker
   * [install](#install)
   * [local_volume_from_device](#local_volume_from_device)
   * [prune_images](#prune_images)
-  * [swarm_node](#swarm_node)
+  * [swarm_worker_node](#swarm_node)
 
 ## Installation
 
