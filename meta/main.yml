@@ -3,7 +3,7 @@
 dependencies:
   - name: bedrock.common
     scm: git
-    src: git@github.com:BedrockSolutions/ansible-role-common.git
+    src: https://github.com/BedrockSolutions/ansible-role-common.git
     vars:
       common:
         command: dependency
@@ -11,7 +11,7 @@ dependencies:
 
   - name: bedrock.os
     scm: git
-    src: git@github.com:BedrockSolutions/ansible-role-os.git
+    src: https://github.com/BedrockSolutions/ansible-role-os.git
     vars:
       common:
         command: dependency
