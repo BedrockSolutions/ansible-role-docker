@@ -11,16 +11,9 @@
               type: string
             name:
               type: string
-            state:
-              type: string
-              enum:
-                - absent
-                - present
-              default: present
           required:
             - device
             - name
-            - state
         instance: "{{ docker }}"
       register: docker_validated
 
@@ -43,7 +36,6 @@
             state: mounted
           when: "'mount_point' in docker_v"
       become: yes
-      when: docker_v.state == 'present'
 
     - name: "Mange volume {{ docker_v.name }} on device {{ docker_v.device }}: {{ docker_v.state }}"
       docker_volume:
@@ -51,7 +43,7 @@
         driver_options:
           device: "{{ docker_v.device }}"
           type: ext4
-        state: "{{ docker_v.state }}"
+        state: present
         volume_name: "{{ docker_v.name }}"
   tags:
     - docker_local_volume_from_device

@@ -14,7 +14,7 @@
                 - install
                 - local_volume_from_device
                 - prune_images
-                - swarm_node
+                - swarm_worker_node
           required:
             - command
         instance: "{{ docker }}"

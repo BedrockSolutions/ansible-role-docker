@@ -17,24 +17,32 @@
                 - ce
                 - ee
               default: ce
-            enable_tls:
-              type: boolean
-              default: true
             install_compose:
               type: boolean
               default: false
             manipulate_iptables:
               type: boolean
               default: true
+            tls_cert_path:
+              type: string
+              default: /etc/docker/tls_cert.pem
+            tls_enable:
+              type: boolean
+              default: true
+            tls_key_path:
+              type: string
+              default: /etc/docker/tls_key.pem
             user:
               type: string
               default: ubuntu
           required:
             - build
             - edition
-            - enable_tls
             - install_compose
             - manipulate_iptables
+            - tls_cert_path
+            - tls_enable
+            - tls_key_path
             - user
         instance: "{{ docker }}"
       register: docker_validated
@@ -50,12 +58,12 @@
             daemon_json:
               iptables: "{{ docker_v.manipulate_iptables }}"
               ip-forward: yes
-              tls: "{{ docker_v.enable_tls }}"
-              tlscert: "{{ docker_v.enable_tls | ternary('/etc/docker/tls_cert.pem', None) }}"
-              tlskey: "{{ docker_v.enable_tls | ternary('/etc/docker/tls_key.pem', None) }}"
-              tlsverify: "{{ docker_v.enable_tls | ternary(true, None) }}"
+              tls: "{{ docker_v.tls_enable }}"
+              tlscert: "{{ docker_v.tls_enable | ternary(docker_v.tls_cert_path, None) }}"
+              tlskey: "{{ docker_v.tls_enable | ternary(docker_v.tls_key_path, None) }}"
+              tlsverify: "{{ docker_v.tls_enable | ternary(true, None) }}"
               hosts:
-                - "tcp://0.0.0.0:{{ docker_v.enable_tls | ternary('2376', '2375') }}"
+                - "tcp://0.0.0.0:{{ docker_v.tls_enable | ternary('2376', '2375') }}"
                 - fd://
             docker_apt_channel: "{{ docker_v.build }}"
             docker_edition: "{{ docker_v.edition }}"
@@ -83,7 +91,7 @@
 
     - name: "Reset the ssh connection to pick up docker group membership"
       import_role:
-        name: jcheroske.common
+        name: bedrock.common
       vars:
         common:
           command: controller_reset_connection

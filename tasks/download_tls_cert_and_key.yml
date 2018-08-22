@@ -5,14 +5,22 @@
         schema:
           type: object
           properties:
+            cert_path:
+              type: string
+              default: /etc/docker/tls_cert.pem
             cert_url:
               type: string
               format: uri
+            key_path:
+              type: string
+              default: /etc/docker/tls_key.pem
             key_url:
               type: string
               format: uri
           required:
+            - cert_path
             - cert_url
+            - key_path
             - key_url
         instance: "{{ docker }}"
       register: docker_validated
@@ -21,21 +29,24 @@
         docker_v: "{{ docker_validated.result }}"
 
     - block:
-        - name: "Create /etc/docker"
+        - name: "Create necessary directories"
           file:
-            path: /etc/docker
+            path: "{{ item | dirname }}"
             state: directory
+          loop:
+            - "{{ docker_v.cert_path }}"
+            - "{{ docker_v.key_path }}"
 
         - name: "Download Docker TLS certificate"
           get_url:
             url: "{{ docker_v.cert_url }}"
-            dest: /etc/docker/tls_cert.pem
+            dest: "{{ docker_v.cert_path }}"
             force: yes
 
         - name: "Download Docker TLS key"
           get_url:
             url: "{{ docker_v.key_url }}"
-            dest: /etc/docker/tls_key.pem
+            dest: "{{ docker_v.key_path }}"
             force: yes
       become: yes
   tags:
