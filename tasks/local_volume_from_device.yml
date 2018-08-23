@@ -37,7 +37,7 @@
           when: "'mount_point' in docker_v"
       become: yes
 
-    - name: "Mange volume {{ docker_v.name }} on device {{ docker_v.device }}: {{ docker_v.state }}"
+    - name: "Create volume {{ docker_v.name }} on device {{ docker_v.device }}"
       docker_volume:
         driver: local
         driver_options:
