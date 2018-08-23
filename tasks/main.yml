@@ -1,4 +1,4 @@
 ---
 
-- include_tasks: ./docker.yml
+- include_tasks: docker.yml
   when: (docker is not defined) or ('command' not in docker) or (docker.command != 'dependency')
