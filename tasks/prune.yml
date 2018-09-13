@@ -1,0 +1,8 @@
+---
+
+- name: "Prune unused objects"
+  command: docker system prune -af
+  register: docker_prune_return
+  changed_when: "'Total reclaimed space: 0B' not in docker_prune_return.stdout"
+  tags:
+    - docker_prune

@@ -13,7 +13,7 @@
                 - dependency
                 - install
                 - local_volume_from_device
-                - prune_images
+                - prune
                 - swarm_worker_node
           required:
             - command

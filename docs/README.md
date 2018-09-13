@@ -188,9 +188,9 @@ Manages a local docker volume created from a device.
       name: factom_database
 ```
 
-### __prune_images__
+### __prune__
 
-Prunes all unused images
+Prunes all unused objects
 
 #### Example
 
@@ -199,7 +199,7 @@ Prunes all unused images
     name: bedrock.docker
   vars:
     docker:
-      command: prune_images
+      command: prune
 ```
 
 ### __swarm_worker_node__
