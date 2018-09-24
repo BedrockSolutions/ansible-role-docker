@@ -50,21 +50,27 @@
     - set_fact:
         docker_v: "{{ docker_validated.result }}"
 
+    - set_fact:
+        docker_daemon_json:
+          iptables: "{{ docker_v.manipulate_iptables }}"
+          ip-forward: yes
+          tls: "{{ docker_v.tls_enabled }}"
+          hosts:
+            - "tcp://0.0.0.0:{{ docker_v.tls_enabled | ternary('2376', '2375') }}"
+            - fd://
+
+    - set_fact:
+        docker_tls_config:
+          tlscert: "{{ docker_v.tls_cert_path }}"
+          tlskey: "{{ docker_v.tls_key_path }}"
+          tlsverify: "{{ docker_v.tls_enabled }}"
+
     - block:
         - name: "Install Docker"
           import_role:
             name: angstwad.docker_ubuntu
           vars:
-            daemon_json:
-              iptables: "{{ docker_v.manipulate_iptables }}"
-              ip-forward: yes
-              tls: "{{ docker_v.tls_enabled }}"
-              tlscert: "{{ docker_v.tls_cert_path | default(omit) }}"
-              tlskey: "{{ docker_v.tls_key_path | default(omit) }}"
-              tlsverify: "{{ docker_v.tls_enabled | ternary(True, None) | default(omit) }}"
-              hosts:
-                - "tcp://0.0.0.0:{{ docker_v.tls_enabled | ternary('2376', '2375') }}"
-                - fd://
+            daemon_json: {{ docker_daemon_json | combine(docker_v.tls_enabled | ternary(docker_tls_config, {})) }}
             docker_apt_channel: "{{ docker_v.build }}"
             docker_edition: "{{ docker_v.edition }}"
             docker_group_members: "{{ docker_v.user }}"
