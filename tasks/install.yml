@@ -61,7 +61,7 @@
               tls: "{{ docker_v.tls_enabled }}"
               tlscert: "{{ docker_v.tls_cert_path | default(omit) }}"
               tlskey: "{{ docker_v.tls_key_path | default(omit) }}"
-              tlsverify: "{{ docker_v.tls_enabled | default(omit) }}"
+              tlsverify: "{{ docker_v.tls_enabled | ternary(True, None) | default(omit) }}"
               hosts:
                 - "tcp://0.0.0.0:{{ docker_v.tls_enabled | ternary('2376', '2375') }}"
                 - fd://
