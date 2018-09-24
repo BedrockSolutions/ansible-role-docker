@@ -59,11 +59,9 @@
               iptables: "{{ docker_v.manipulate_iptables }}"
               ip-forward: yes
               tls: "{{ docker_v.tls_enabled }}"
-              tlscert: "{{ docker_v.tls_enabled | ternary(docker_v.tls_cert_path, None) }}"
-              tlskey: "{{ docker_v.tls_enabled | ternary(docker_v.tls_key_path, None) }}"
-              {% if docker_v.tls_enabled %}
-                tlsverify: yes
-              {% endif %}
+              tlscert: "{{ (docker_v.tls_enabled and docker_v.tls_cert_path) or omit }}"
+              tlskey: "{{ (docker_v.tls_enabled and docker_v.tls_key_path) or omit }}"
+              tlsverify: "{{ docker_v.tls_enabled or omit }}"
               hosts:
                 - "tcp://0.0.0.0:{{ docker_v.tls_enabled | ternary('2376', '2375') }}"
                 - fd://
