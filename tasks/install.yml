@@ -70,7 +70,7 @@
           import_role:
             name: angstwad.docker_ubuntu
           vars:
-            daemon_json: {{ docker_daemon_json | combine(docker_v.tls_enabled | ternary(docker_tls_config, {})) }}
+            daemon_json: "{{ docker_daemon_json | combine(docker_v.tls_enabled | ternary(docker_tls_config, {})) }}"
             docker_apt_channel: "{{ docker_v.build }}"
             docker_edition: "{{ docker_v.edition }}"
             docker_group_members: "{{ docker_v.user }}"
