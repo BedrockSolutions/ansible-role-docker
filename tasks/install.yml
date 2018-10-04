@@ -74,6 +74,7 @@
             docker_apt_channel: "{{ docker_v.build }}"
             docker_edition: "{{ docker_v.edition }}"
             docker_group_members: "{{ docker_v.user }}"
+            docker_ubuntu_enabled: yes
             pip_install_docker_compose: "{{ docker_v.install_compose }}"
             ufw_set_forward_policy: no
             uninstall_previous_docker_versions: yes
