@@ -32,6 +32,9 @@
             tls_key_path:
               type: string
               default: /etc/docker/tls_key.pem
+            tls_verify:
+              type: boolean
+              default: false
             user:
               type: string
               default: ubuntu
@@ -43,6 +46,7 @@
             - tls_cert_path
             - tls_enabled
             - tls_key_path
+            - tls_verify
             - user
         instance: "{{ docker }}"
       register: docker_validated
@@ -63,7 +67,7 @@
         docker_tls_config:
           tlscert: "{{ docker_v.tls_cert_path }}"
           tlskey: "{{ docker_v.tls_key_path }}"
-          tlsverify: "{{ docker_v.tls_enabled }}"
+          tlsverify: "{{ docker_v.tls_verify }}"
 
     - block:
         - name: "Install Docker"
