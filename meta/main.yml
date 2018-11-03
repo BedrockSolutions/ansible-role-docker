@@ -17,11 +17,12 @@ dependencies:
         command: dependency
     version: master
 
-  - name: angstwad.docker_ubuntu
+  - name: bedrock.python
     scm: git
-    src: https://github.com/BedrockSolutions/docker.ubuntu.git
+    src: https://github.com/BedrockSolutions/ansible-role-python.git
     vars:
-      docker_ubuntu_enabled: no
+      python:
+        command: dependency
     version: master
 
   - name: geerlingguy.ansible-role-docker
