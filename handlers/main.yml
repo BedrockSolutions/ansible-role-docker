@@ -3,3 +3,7 @@
 - name: grub_update
   command: update-grub
   become: yes
+
+- name: docker_restart
+  service: name=docker state=restarted
+  become: yes

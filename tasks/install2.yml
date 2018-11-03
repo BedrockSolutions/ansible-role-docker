@@ -1,0 +1,135 @@
+---
+
+- block:
+    - validate:
+        schema:
+          type: object
+          properties:
+            build:
+              type: string
+              enum:
+                - stable
+                - edge
+              default: stable
+            edition:
+              type: string
+              enum:
+                - ce
+                - ee
+              default: ce
+            install_compose:
+              type: boolean
+              default: no
+            manipulate_iptables:
+              type: boolean
+              default: yes
+            tls_cert_path:
+              type: string
+              default: /etc/docker/tls_cert.pem
+            tls_enabled:
+              type: boolean
+              default: no
+            tls_key_path:
+              type: string
+              default: /etc/docker/tls_key.pem
+            tls_verify:
+              type: boolean
+              default: false
+            user:
+              type: string
+              default: ubuntu
+          required:
+            - build
+            - edition
+            - install_compose
+            - manipulate_iptables
+            - tls_cert_path
+            - tls_enabled
+            - tls_key_path
+            - tls_verify
+            - user
+        instance: "{{ docker }}"
+      register: docker_validated
+
+    - set_fact:
+        docker_v: "{{ docker_validated.result }}"
+
+    - set_fact:
+        docker_daemon_json:
+          iptables: "{{ docker_v.manipulate_iptables }}"
+          ip-forward: yes
+          tls: "{{ docker_v.tls_enabled }}"
+          hosts:
+            - "tcp://0.0.0.0:{{ docker_v.tls_enabled | ternary('2376', '2375') }}"
+            - fd://
+
+    - set_fact:
+        docker_tls_config:
+          tlscert: "{{ docker_v.tls_cert_path }}"
+          tlskey: "{{ docker_v.tls_key_path }}"
+          tlsverify: "{{ docker_v.tls_verify }}"
+
+    - block:
+      - name: Ensure /etc/docker is present
+        file:
+          path: /etc/docker
+          state: directory
+          owner: root
+          group: root
+          mode: 0755
+
+      - name: Set /etc/docker/daemon.json
+        copy:
+          content: "{{ docker_daemon_json | combine(docker_v.tls_enabled | ternary(docker_tls_config, {})) | to_nice_json }}"
+          dest: /etc/docker/daemon.json
+          owner: root
+          group: root
+          mode: 0644
+        notify:
+          - docker_restart
+
+      - name: "Install python packages"
+        import_role:
+          name: bedrock.python
+        vars:
+          python:
+            command: pip3
+            packages:
+              - docker
+
+      - name: "Install Docker"
+        import_role:
+          name: geerlingguy.ansible-role-docker
+        vars:
+          docker_edition: "{{ docker_v.edition }}"
+          docker_install_compose: "{{ docker_v.install_compose }}"
+          docker_apt_release_channel: "{{ docker_v.build }}"
+          docker_users:
+            - "{{ docker_v.user }}"
+
+      - name: "Enable ip forwarding in the kernel"
+        sysctl:
+          name: net.ipv4.ip_forward
+          value: 1
+          sysctl_set: yes
+          state: present
+          reload: yes
+
+      - name: "Enable memory and swap accounting"
+        lineinfile:
+          path: /etc/default/grub
+          regexp: GRUB_CMDLINE_LINUX_DEFAULT
+          line: GRUB_CMDLINE_LINUX_DEFAULT="cgroup_enable=memory swapaccount=1"
+        notify:
+          - grub_update
+          - os_reboot
+      become: yes
+
+    - name: "Reset the ssh connection to pick up docker group membership"
+      import_role:
+        name: bedrock.common
+      vars:
+        common:
+          command: controller_reset_connection
+  tags:
+    - docker_install
