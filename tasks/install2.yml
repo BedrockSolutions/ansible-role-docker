@@ -69,6 +69,15 @@
           tlskey: "{{ docker_v.tls_key_path }}"
           tlsverify: "{{ docker_v.tls_verify }}"
 
+    - name: "Install python packages"
+      import_role:
+        name: bedrock.python
+      vars:
+        python:
+          command: pip3
+          packages:
+            - docker
+
     - block:
       - name: Create systemd override directory
         file:
@@ -110,15 +119,6 @@
           mode: 0644
         notify:
           - docker_restart
-
-      - name: "Install python packages"
-        import_role:
-          name: bedrock.python
-        vars:
-          python:
-            command: pip3
-            packages:
-              - docker
 
       - name: "Install Docker"
         import_role:
