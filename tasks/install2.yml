@@ -70,6 +70,29 @@
           tlsverify: "{{ docker_v.tls_verify }}"
 
     - block:
+      - name: Create systemd override directory
+        file:
+          path: /etc/systemd/system/docker.service.d
+          state: directory
+          owner: root
+          group: root
+          mode: 0755
+        when:
+
+      - name: Create systemd override file
+        copy:
+          content: |
+            [Service]
+            ExecStart=
+            ExecStart=/usr/bin/dockerd
+          dest: /etc/systemd/system/docker.service.d/override.conf
+          owner: root
+          group: root
+          mode: 0644
+        notify:
+          - systemd_reload
+          - docker_restart
+
       - name: Ensure /etc/docker is present
         file:
           path: /etc/docker

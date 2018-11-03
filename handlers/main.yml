@@ -7,3 +7,6 @@
 - name: docker_restart
   service: name=docker state=restarted
   become: yes
+
+- name: systemd_reload
+  command: systemctl daemon-reload
