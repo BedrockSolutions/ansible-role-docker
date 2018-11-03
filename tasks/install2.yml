@@ -101,9 +101,10 @@
         import_role:
           name: geerlingguy.ansible-role-docker
         vars:
+          docker_apt_release_channel: "{{ docker_v.build }}"
           docker_edition: "{{ docker_v.edition }}"
           docker_install_compose: "{{ docker_v.install_compose }}"
-          docker_apt_release_channel: "{{ docker_v.build }}"
+          docker_install_enabled: yes
           docker_users:
             - "{{ docker_v.user }}"
 
