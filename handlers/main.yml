@@ -10,3 +10,4 @@
 
 - name: systemd_reload
   command: systemctl daemon-reload
+  become: yes
