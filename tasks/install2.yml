@@ -74,9 +74,10 @@
         name: bedrock.python
       vars:
         python:
-          command: pip3
+          command: pip
           packages:
             - docker
+          python_version: 2
 
     - block:
       - name: Create systemd override directory
