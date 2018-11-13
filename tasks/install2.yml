@@ -5,6 +5,11 @@
         schema:
           type: object
           properties:
+            arch:
+              type: string
+              enum:
+                - amd64
+              default: amd64
             build:
               type: string
               enum:
@@ -55,6 +60,9 @@
         docker_v: "{{ docker_validated.result }}"
 
     - set_fact:
+        docker_apt_repository: "deb [arch={{ docker_v.arch }}] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} {{ docker_v.build }}"
+
+    - set_fact:
         docker_daemon_json:
           iptables: "{{ docker_v.manipulate_iptables }}"
           ip-forward: yes
@@ -80,7 +88,26 @@
             - requests
 
     - block:
-      - name: Create systemd override directory
+      - name: "Ensure dependencies are installed"
+        apt:
+          name:
+            - apt-transport-https
+            - ca-certificates
+          state: present
+
+      - name: "Add Docker apt key"
+        apt_key:
+          url: https://download.docker.com/linux/ubuntu/gpg
+          id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+          state: present
+
+      - name: Add Docker repository.
+        apt_repository:
+          repo: "{{ docker_apt_repository }}"
+          state: present
+          update_cache: true
+
+      - name: "Create systemd override directory"
         file:
           path: /etc/systemd/system/docker.service.d
           state: directory
@@ -89,7 +116,7 @@
           mode: 0755
         when:
 
-      - name: Create systemd override file
+      - name: "Create systemd override file"
         copy:
           content: |
             [Service]
@@ -103,7 +130,7 @@
           - systemd_reload
           - docker_restart
 
-      - name: Ensure /etc/docker is present
+      - name: "Ensure /etc/docker is present"
         file:
           path: /etc/docker
           state: directory
@@ -111,7 +138,7 @@
           group: root
           mode: 0755
 
-      - name: Set /etc/docker/daemon.json
+      - name: "Set /etc/docker/daemon.json"
         copy:
           content: "{{ docker_daemon_json | combine(docker_v.tls_enabled | ternary(docker_tls_config, {})) | to_nice_json }}"
           dest: /etc/docker/daemon.json
@@ -121,16 +148,23 @@
         notify:
           - docker_restart
 
-      - name: "Install Docker"
-        import_role:
-          name: geerlingguy.ansible-role-docker
-        vars:
-          docker_apt_release_channel: "{{ docker_v.build }}"
-          docker_edition: "{{ docker_v.edition }}"
-          docker_install_compose: "{{ docker_v.install_compose }}"
-          docker_install_enabled: yes
-          docker_users:
-            - "{{ docker_v.user }}"
+      - name: "Install the Docker package"
+        package:
+          name: "docker-{{ docker_v.edition }}"
+          state: present
+        notify: docker_restart
+
+      - name: "Ensure Docker is started and enabled at boot"
+        service:
+          name: docker
+          state: started
+          enabled: yes
+
+      - name: "Add docker user to the docker group"
+        user:
+          name: "{{ docker_v.user }}"
+          groups: docker
+          append: true
 
       - name: "Enable ip forwarding in the kernel"
         sysctl:
