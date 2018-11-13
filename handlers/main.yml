@@ -5,7 +5,9 @@
   become: yes
 
 - name: docker_restart
-  service: name=docker state=restarted
+  service:
+    name: docker
+    state: restarted
   become: yes
 
 - name: systemd_reload
