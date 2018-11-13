@@ -85,6 +85,7 @@
           command: pip
           packages:
             - docker
+          user: yes
 
     - block:
       - name: "Ensure dependencies are installed"
