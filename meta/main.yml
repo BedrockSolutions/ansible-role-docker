@@ -32,10 +32,3 @@ dependencies:
       python:
         command: dependency
     version: master
-
-  - name: geerlingguy.ansible-role-docker
-    scm: git
-    src: https://github.com/BedrockSolutions/ansible-role-docker-install.git
-    vars:
-      docker_install_enabled: no
-    version: master
