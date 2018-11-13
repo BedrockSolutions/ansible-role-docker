@@ -12,7 +12,6 @@
                 - download_tls_cert_and_key
                 - dependency
                 - install
-                - install2
                 - local_volume_from_device
                 - prune
                 - swarm_worker_node
