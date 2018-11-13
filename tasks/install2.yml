@@ -69,7 +69,7 @@
           tls: "{{ docker_v.tls_enabled }}"
           hosts:
             - "tcp://0.0.0.0:{{ docker_v.tls_enabled | ternary('2376', '2375') }}"
-            - fd://
+            - unix://var/run/docker.sock
 
     - set_fact:
         docker_tls_config:
