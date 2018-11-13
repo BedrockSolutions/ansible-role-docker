@@ -145,8 +145,7 @@
           owner: root
           group: root
           mode: 0644
-        notify:
-          - docker_restart
+        notify: docker_restart
 
       - name: "Install the Docker package"
         package:
@@ -190,5 +189,9 @@
       vars:
         ansible:
           command: reset_controller_connection
+
+    - name: "Ensure handlers are notified now to avoid firewall conflicts."
+      meta: flush_handlers
+
   tags:
     - docker_install
