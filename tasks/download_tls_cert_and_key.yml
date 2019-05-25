@@ -5,6 +5,12 @@
         schema:
           type: object
           properties:
+            ca_path:
+              type: string
+              default: /etc/docker/tls_ca.pem
+            ca_url:
+              type: string
+              format: uri
             cert_path:
               type: string
               default: /etc/docker/tls_cert.pem
@@ -18,6 +24,8 @@
               type: string
               format: uri
           required:
+            - ca_path
+            - ca_url
             - cert_path
             - cert_url
             - key_path
@@ -34,20 +42,33 @@
             path: "{{ item | dirname }}"
             state: directory
           loop:
+            - "{{ docker_v.ca_path }}"
             - "{{ docker_v.cert_path }}"
             - "{{ docker_v.key_path }}"
+
+        - name: "Download Docker TLS ca"
+          get_url:
+            url: "{{ docker_v.ca_url }}"
+            dest: "{{ docker_v.ca_path }}"
+            force: yes
+            group: docker
+            mode: 0644
 
         - name: "Download Docker TLS certificate"
           get_url:
             url: "{{ docker_v.cert_url }}"
             dest: "{{ docker_v.cert_path }}"
             force: yes
+            group: docker
+            mode: 0644
 
         - name: "Download Docker TLS key"
           get_url:
             url: "{{ docker_v.key_url }}"
             dest: "{{ docker_v.key_path }}"
             force: yes
+            group: docker
+            mode: 0644
       become: yes
   tags:
     - docker_download_tls_cert_and_key

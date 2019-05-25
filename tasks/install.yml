@@ -28,6 +28,9 @@
             manipulate_iptables:
               type: boolean
               default: yes
+            tls_ca_path:
+              type: string
+              default: /etc/docker/tls_ca.pem
             tls_cert_path:
               type: string
               default: /etc/docker/tls_cert.pem
@@ -73,6 +76,7 @@
 
     - set_fact:
         docker_tls_config:
+          tlscacert: "{{ docker_v.tls_cert_path }}"
           tlscert: "{{ docker_v.tls_cert_path }}"
           tlskey: "{{ docker_v.tls_key_path }}"
           tlsverify: "{{ docker_v.tls_verify }}"
